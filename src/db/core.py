@@ -1,5 +1,5 @@
 from sqlalchemy import text
-from database import sync_engine, async_engine
+from src.database import sync_engine, async_engine
 from src.db.models.users import metadata
 
 

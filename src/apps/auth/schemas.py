@@ -1,10 +1,8 @@
-import uuid
 from typing import Optional
 
 from fastapi_users import schemas
 from fastapi_users.schemas import PYDANTIC_V2
-from pydantic import EmailStr
-from sqlalchemy import TIMESTAMP
+from pydantic import ConfigDict, EmailStr
 
 
 class UserRead(schemas.BaseUser[int]):
