@@ -1,11 +1,13 @@
 import os
 import sys
 
-from src.apps.auth.database import User
+import uvicorn
+
+from apps.auth.database import User
 
 from fastapi_users import fastapi_users, FastAPIUsers
 
-from src.db.core import create_tables
+# from src.db.core import create_tables
 
 from datetime import datetime
 from enum import Enum
@@ -15,9 +17,11 @@ from fastapi_users import fastapi_users
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
-from src.apps.auth.auth import auth_backend
-from src.apps.auth.manager import get_user_manager
-from src.apps.auth.schemas import UserRead, UserCreate
+from apps.auth.auth import auth_backend
+from apps.auth.manager import get_user_manager
+from apps.auth.schemas import UserRead, UserCreate
+
+from api.goods import router as goods_list
 
 # sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
@@ -57,6 +61,8 @@ app.include_router(
     prefix="/auth",
     tags=["auth"],
 )
+
+app.include_router(goods_list)
 #
 # fake_users = [
 #     {"id": 1, "name": "Alex", "role": "admin", "degree": [
@@ -134,3 +140,12 @@ app.include_router(
 # async def add_books(books: list[Book]):
 #     fake_books.extend(books)
 #     return {"status": 200, "data": fake_books}
+
+
+if __name__ == "__main__":
+    uvicorn.run(
+        "main:app",
+        host='0.0.0.0',
+        port=8000,
+        reload=True,
+    )

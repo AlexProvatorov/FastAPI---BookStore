@@ -2,7 +2,8 @@ import asyncio
 
 from sqlalchemy import create_engine, URL, text
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from src.config import settings
+from sqlalchemy.orm import Session, sessionmaker, DeclarativeBase
+from config import settings
 
 sync_engine = create_engine(
     url=settings.DATABASE_URL_psycopg2,
@@ -18,6 +19,9 @@ async_engine = create_async_engine(
     max_overflow=settings.MAX_OVERFLOW,
 )
 
+
+class Base(DeclarativeBase):
+    pass
 #
 # with sync_engine.connect() as connection:
 #     res = connection.execute(text("SELECT 1, 2, 3 UNION SELECT 4, 5, 6"))
