@@ -63,10 +63,31 @@ async def add_book(new_book: BookCreate, session: AsyncSession = Depends(get_asy
 
 
 @router.patch("/{book_id}")
-async def edit_book(book_id: int, new_book: BookCreate, session: AsyncSession = Depends(get_async_session)):
-    stmt = update(Book).values(**new_book.dict()).where(book_id == Book.id)
+async def edit_book(book_id: int, edit_book: BookCreate, session: AsyncSession = Depends(get_async_session)):
+    is_tags_exists = exists().where(Tag.id.in_(edit_book.tags)).select()
+    is_authors_exists = exists().where(Author.id.in_(edit_book.authors)).select()
+    is_tags_exists = (await session.execute(is_tags_exists)).scalar()
+    is_authors_exists = (await session.execute(is_authors_exists)).scalar()
+
+    if not is_tags_exists or not is_authors_exists:
+        raise HTTPException(status_code=404, detail="Book not found")
+
+    edit_book = edit_book.dict()
+    list_tags = edit_book.pop("tags")
+    list_authors = edit_book.pop("authors")
+    stmt = update(Book).values(edit_book).where(book_id == Book.id)
+    await session.execute(stmt)
+
+    tags = [TagOfBookSchema(id_tag=id_tag, id_book=book_id).dict() for id_tag in list_tags]
+    authors = [AuthorOfBookSchema(id_author=id_author, id_book=book_id).dict() for id_author in list_authors]
+
+    stmt = insert(TagOfBooks).values(tags)
+    await session.execute(stmt)
+
+    stmt = insert(AuthorOfBooks).values(authors)
     await session.execute(stmt)
     await session.commit()
+
     return {"status": "success"}
 
 
