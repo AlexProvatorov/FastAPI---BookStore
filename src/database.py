@@ -1,16 +1,8 @@
-import asyncio
-
-from sqlalchemy import create_engine, URL, text
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from sqlalchemy.orm import Session, sessionmaker, DeclarativeBase
+from sqlalchemy.orm import DeclarativeBase
 from config import settings
+from typing import AsyncGenerator
 
-sync_engine = create_engine(
-    url=settings.DATABASE_URL_psycopg2,
-    echo=settings.DEBUG,
-    pool_size=settings.POOL_SIZE,
-    max_overflow=settings.MAX_OVERFLOW,
-)
 
 async_engine = create_async_engine(
     url=settings.DATABASE_URL_asyncpg,
@@ -19,19 +11,14 @@ async_engine = create_async_engine(
     max_overflow=settings.MAX_OVERFLOW,
 )
 
+async_session_maker = async_sessionmaker(async_engine, class_=AsyncSession, expire_on_commit=False)
+
+
+async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
+    async with async_session_maker() as session:
+        yield session
+
 
 class Base(DeclarativeBase):
     pass
-#
-# with sync_engine.connect() as connection:
-#     res = connection.execute(text("SELECT 1, 2, 3 UNION SELECT 4, 5, 6"))
-#     print(f"{res.all()[0]=}")
-#
-#
-# async def get_456():
-#     async with async_engine.connect() as connection:
-#         res = await connection.execute(text("SELECT 1, 2, 3 UNION SELECT 4, 5, 6"))
-#         print(f"{res.all()[1]=}")
-#
-#
-# asyncio.run(get_456())
+

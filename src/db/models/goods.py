@@ -33,9 +33,24 @@ class Book(Base):
     time_created = Column(DateTime(timezone=True), server_default=func.now())
     time_updated = Column(DateTime(timezone=True), onupdate=func.now())
     photo = Column(String, default=None, nullable=False)
-    tags = relationship('Tag', secondary='TagOfBooks', backref='Book')
-    authors = relationship('Author', secondary='AuthorOfBooks', backref='Book')
     date_released = Column(Date)
+
+    tags = relationship(
+        'Tag',
+        primaryjoin="Book.id == TagOfBooks.id_book",
+        secondaryjoin="TagOfBooks.id_tag == Tag.id",
+        secondary='tags_of_books',
+        backref='books',
+        lazy='selectin',
+    )
+    authors = relationship(
+        'Author',
+        primaryjoin="Book.id == AuthorOfBooks.id_book",
+        secondaryjoin="AuthorOfBooks.id_author == Author.id",
+        secondary='authors_of_books',
+        backref='books',
+        lazy='selectin',
+    )
 
 
 class Tag(Base):
@@ -45,7 +60,6 @@ class Tag(Base):
     name = Column(String, nullable=False)
     description = Column(String, nullable=False)
     slug = Column(String, nullable=False, unique=True)
-    books = relationship('Book', secondary='TagOfBooks', backref='Tag')
 
 
 class Author(Base):
@@ -54,5 +68,3 @@ class Author(Base):
     id = Column(Integer, primary_key=True)
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
-    books = relationship('Book', secondary='AuthorOfBooks', backref='Author')
-
