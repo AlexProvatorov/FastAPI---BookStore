@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import select, insert, delete, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from auth_utils import current_superuser
 from database import get_async_session
 from db.models.goods import Author
 
@@ -56,6 +57,7 @@ async def get_author(
     description="Create new author for authors model",
     response_model=AuthorCreate,
     status_code=201,
+    dependencies=[Depends(current_superuser)]
 )
 async def add_author(
     new_author: AuthorCreate, session: AsyncSession = Depends(get_async_session)
@@ -72,6 +74,7 @@ async def add_author(
     description="Change author for authors model",
     response_model=AuthorCreate,
     status_code=201,
+    dependencies=[Depends(current_superuser)]
 )
 async def edit_author(
     author_id: int,
@@ -97,6 +100,7 @@ async def edit_author(
     description="Remove one book through id from books model",
     response_model=None,
     status_code=204,
+    dependencies=[Depends(current_superuser)]
 )
 async def delete_author(
     author_id: int, session: AsyncSession = Depends(get_async_session)

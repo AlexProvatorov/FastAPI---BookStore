@@ -3,6 +3,7 @@ from sqlalchemy import select, insert, delete, update
 from sqlalchemy.sql import exists
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from auth_utils import current_superuser
 from database import get_async_session
 from db.models.goods import Book, Tag, Author, TagOfBooks, AuthorOfBooks
 from apps.goods.schemas import TagOfBook as TagOfBookSchema
@@ -58,9 +59,10 @@ async def get_book(book_id: int, session: AsyncSession = Depends(get_async_sessi
     description="Create new book for books model",
     response_model=BookCreate,
     status_code=201,
+    dependencies=[Depends(current_superuser)]
 )
 async def add_book(
-    new_book: BookCreate, session: AsyncSession = Depends(get_async_session)
+    new_book: BookCreate, session: AsyncSession = Depends(get_async_session),
 ):
     is_tags_exists = exists().where(Tag.id.in_(new_book.tags)).select()
     is_authors_exists = exists().where(Author.id.in_(new_book.authors)).select()
@@ -104,6 +106,7 @@ async def add_book(
     description="Change book for books model",
     response_model=BookCreate,
     status_code=201,
+    dependencies=[Depends(current_superuser)]
 )
 async def edit_book(
     book_id: int,
@@ -157,6 +160,7 @@ async def edit_book(
     description="Remove book from books list",
     response_model=None,
     status_code=204,
+    dependencies=[Depends(current_superuser)]
 )
 async def delete_book(book_id: int, session: AsyncSession = Depends(get_async_session)):
     query = select(Book).where(book_id == Book.id)

@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import select, insert, delete, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from auth_utils import current_superuser
 from database import get_async_session
 from db.models.goods import Tag
 
@@ -54,6 +55,7 @@ async def get_tag(tag_id: int, session: AsyncSession = Depends(get_async_session
     description="Create new tag for tags model",
     response_model=TagCreate,
     status_code=201,
+    dependencies=[Depends(current_superuser)]
 )
 async def add_tag(
     new_tag: TagCreate, session: AsyncSession = Depends(get_async_session)
@@ -70,6 +72,7 @@ async def add_tag(
     description="Change tag for tags model",
     response_model=TagCreate,
     status_code=201,
+    dependencies=[Depends(current_superuser)]
 )
 async def edit_tag(
     tag_id: int,
@@ -95,6 +98,7 @@ async def edit_tag(
     description="Remove one tag through id from tags model",
     response_model=None,
     status_code=204,
+    dependencies=[Depends(current_superuser)]
 )
 async def delete_tag(tag_id: int, session: AsyncSession = Depends(get_async_session)):
     query = select(Tag).where(tag_id == Tag.id)
