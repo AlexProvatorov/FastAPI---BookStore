@@ -16,44 +16,26 @@ class Base(DeclarativeBase):
 
 
 class User(SQLAlchemyBaseUserTable[int], Base):
-    id: Mapped[int] = mapped_column(
-        Integer, primary_key=True, autoincrement=True
-    )
-    username: Mapped[str] = mapped_column(
-        String(255), unique=True, nullable=False
-    )
-    first_name: Mapped[str] = mapped_column(
-        String(255), unique=False, nullable=True
-    )
-    last_name: Mapped[str] = mapped_column(
-        String(255), unique=False, nullable=True
-    )
-    slug: Mapped[str] = mapped_column(
-        String(255), unique=True, nullable=False
-    )
-    date_of_birth: Mapped[str] = mapped_column(
-        TIMESTAMP, unique=False, nullable=True
-    )
-    photo: Mapped[str] = mapped_column(
-        String(255), unique=False, nullable=True
-    )
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    username: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
+    first_name: Mapped[str] = mapped_column(String(255), unique=False, nullable=True)
+    last_name: Mapped[str] = mapped_column(String(255), unique=False, nullable=True)
+    slug: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
+    date_of_birth: Mapped[str] = mapped_column(TIMESTAMP, unique=False, nullable=True)
+    photo: Mapped[str] = mapped_column(String(255), unique=False, nullable=True)
     email: Mapped[str] = mapped_column(
         String(length=320), unique=True, index=True, nullable=False
     )
-    hashed_password: Mapped[str] = mapped_column(
-        String(length=1024), nullable=False
-    )
+    hashed_password: Mapped[str] = mapped_column(String(length=1024), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
-    is_superuser: Mapped[bool] = mapped_column(
-        Boolean, default=False, nullable=False
-    )
-    is_verified: Mapped[bool] = mapped_column(
-        Boolean, default=False, nullable=False
-    )
+    is_superuser: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    is_verified: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
 
 engine = create_async_engine(DATABASE_URL)
-async_session_maker = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+async_session_maker = async_sessionmaker(
+    engine, class_=AsyncSession, expire_on_commit=False
+)
 
 
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:

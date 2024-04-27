@@ -55,7 +55,9 @@ async def get_tag(tag_id: int, session: AsyncSession = Depends(get_async_session
     response_model=TagCreate,
     status_code=201,
 )
-async def add_tag(new_tag: TagCreate, session: AsyncSession = Depends(get_async_session)):
+async def add_tag(
+    new_tag: TagCreate, session: AsyncSession = Depends(get_async_session)
+):
     stmt = insert(Tag).values(**new_tag.dict())
     await session.execute(stmt)
     await session.commit()
@@ -69,7 +71,11 @@ async def add_tag(new_tag: TagCreate, session: AsyncSession = Depends(get_async_
     response_model=TagCreate,
     status_code=201,
 )
-async def edit_tag(tag_id: int, changed_tag: TagCreate, session: AsyncSession = Depends(get_async_session)):
+async def edit_tag(
+    tag_id: int,
+    changed_tag: TagCreate,
+    session: AsyncSession = Depends(get_async_session),
+):
     query = select(Tag).where(tag_id == Tag.id)
     result = await session.execute(query)
     tag = result.scalars().first()

@@ -1,27 +1,37 @@
-from sqlalchemy import Column, String, ForeignKey, Integer, Boolean, DECIMAL, DateTime, func, Date
+from sqlalchemy import (
+    Column,
+    String,
+    ForeignKey,
+    Integer,
+    Boolean,
+    DECIMAL,
+    DateTime,
+    func,
+    Date,
+)
 from sqlalchemy.orm import relationship
 
 from database import Base
 
 
 class TagOfBooks(Base):
-    __tablename__ = 'tags_of_books'
+    __tablename__ = "tags_of_books"
 
     id = Column(Integer, primary_key=True)
-    id_book = Column(Integer, ForeignKey('books.id'))
-    id_tag = Column(Integer, ForeignKey('tags.id'))
+    id_book = Column(Integer, ForeignKey("books.id"))
+    id_tag = Column(Integer, ForeignKey("tags.id"))
 
 
 class AuthorOfBooks(Base):
-    __tablename__ = 'authors_of_books'
+    __tablename__ = "authors_of_books"
 
     id = Column(Integer, primary_key=True)
-    id_book = Column(Integer, ForeignKey('books.id'))
-    id_author = Column(Integer, ForeignKey('tags.id'))
+    id_book = Column(Integer, ForeignKey("books.id"))
+    id_author = Column(Integer, ForeignKey("tags.id"))
 
 
 class Book(Base):
-    __tablename__ = 'books'
+    __tablename__ = "books"
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
@@ -36,25 +46,25 @@ class Book(Base):
     date_released = Column(Date)
 
     tags = relationship(
-        'Tag',
+        "Tag",
         primaryjoin="Book.id == TagOfBooks.id_book",
         secondaryjoin="TagOfBooks.id_tag == Tag.id",
-        secondary='tags_of_books',
-        backref='books',
-        lazy='selectin',
+        secondary="tags_of_books",
+        backref="books",
+        lazy="selectin",
     )
     authors = relationship(
-        'Author',
+        "Author",
         primaryjoin="Book.id == AuthorOfBooks.id_book",
         secondaryjoin="AuthorOfBooks.id_author == Author.id",
-        secondary='authors_of_books',
-        backref='books',
-        lazy='selectin',
+        secondary="authors_of_books",
+        backref="books",
+        lazy="selectin",
     )
 
 
 class Tag(Base):
-    __tablename__ = 'tags'
+    __tablename__ = "tags"
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
@@ -63,7 +73,7 @@ class Tag(Base):
 
 
 class Author(Base):
-    __tablename__ = 'authors'
+    __tablename__ = "authors"
 
     id = Column(Integer, primary_key=True)
     first_name = Column(String, nullable=False)

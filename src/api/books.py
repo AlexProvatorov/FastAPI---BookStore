@@ -34,6 +34,7 @@ async def get_books(session: AsyncSession = Depends(get_async_session)):
 
     return books
 
+
 @router.get(
     path="/{book_id}",
     name="Get one book",
@@ -58,14 +59,18 @@ async def get_book(book_id: int, session: AsyncSession = Depends(get_async_sessi
     response_model=BookCreate,
     status_code=201,
 )
-async def add_book(new_book: BookCreate, session: AsyncSession = Depends(get_async_session)):
+async def add_book(
+    new_book: BookCreate, session: AsyncSession = Depends(get_async_session)
+):
     is_tags_exists = exists().where(Tag.id.in_(new_book.tags)).select()
     is_authors_exists = exists().where(Author.id.in_(new_book.authors)).select()
     is_tags_exists = (await session.execute(is_tags_exists)).scalar()
     is_authors_exists = (await session.execute(is_authors_exists)).scalar()
 
     if not is_tags_exists or not is_authors_exists:
-        raise ExceptionNotFound(message="Book must contain at least one author and a tag")
+        raise ExceptionNotFound(
+            message="Book must contain at least one author and a tag"
+        )
 
     book = new_book.dict()
     list_tags = book.pop("tags")
@@ -74,8 +79,14 @@ async def add_book(new_book: BookCreate, session: AsyncSession = Depends(get_asy
     cursor_exec = await session.execute(stmt)
     new_book_id = cursor_exec.returned_defaults[0]
 
-    tags = [TagOfBookSchema(id_tag=id_tag, id_book=new_book_id).dict() for id_tag in list_tags]
-    authors = [AuthorOfBookSchema(id_author=id_author, id_book=new_book_id).dict() for id_author in list_authors]
+    tags = [
+        TagOfBookSchema(id_tag=id_tag, id_book=new_book_id).dict()
+        for id_tag in list_tags
+    ]
+    authors = [
+        AuthorOfBookSchema(id_author=id_author, id_book=new_book_id).dict()
+        for id_author in list_authors
+    ]
 
     stmt = insert(TagOfBooks).values(tags)
     await session.execute(stmt)
@@ -94,7 +105,11 @@ async def add_book(new_book: BookCreate, session: AsyncSession = Depends(get_asy
     response_model=BookCreate,
     status_code=201,
 )
-async def edit_book(book_id: int, changed_book: BookCreate, session: AsyncSession = Depends(get_async_session)):
+async def edit_book(
+    book_id: int,
+    changed_book: BookCreate,
+    session: AsyncSession = Depends(get_async_session),
+):
     query = select(Book).where(book_id == Book.id)
     result = await session.execute(query)
     book = result.scalars().first()
@@ -108,7 +123,9 @@ async def edit_book(book_id: int, changed_book: BookCreate, session: AsyncSessio
     is_authors_exists = (await session.execute(is_authors_exists)).scalar()
 
     if not is_tags_exists or not is_authors_exists:
-        raise ExceptionNotFound(message="Book must contain at least one author and a tag")
+        raise ExceptionNotFound(
+            message="Book must contain at least one author and a tag"
+        )
 
     book = changed_book.dict()
     list_tags = book.pop("tags")
@@ -116,8 +133,13 @@ async def edit_book(book_id: int, changed_book: BookCreate, session: AsyncSessio
     stmt = update(Book).values(book).where(book_id == Book.id)
     await session.execute(stmt)
 
-    tags = [TagOfBookSchema(id_tag=id_tag, id_book=book_id).dict() for id_tag in list_tags]
-    authors = [AuthorOfBookSchema(id_author=id_author, id_book=book_id).dict() for id_author in list_authors]
+    tags = [
+        TagOfBookSchema(id_tag=id_tag, id_book=book_id).dict() for id_tag in list_tags
+    ]
+    authors = [
+        AuthorOfBookSchema(id_author=id_author, id_book=book_id).dict()
+        for id_author in list_authors
+    ]
 
     stmt = insert(TagOfBooks).values(tags)
     await session.execute(stmt)

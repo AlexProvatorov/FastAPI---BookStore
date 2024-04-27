@@ -37,7 +37,9 @@ async def get_authors(session: AsyncSession = Depends(get_async_session)):
     description="Get one author through id from authors model",
     status_code=200,
 )
-async def get_author(author_id: int, session: AsyncSession = Depends(get_async_session)):
+async def get_author(
+    author_id: int, session: AsyncSession = Depends(get_async_session)
+):
     query = select(Author).where(author_id == Author.id)
     result = await session.execute(query)
     author = result.scalars().all()
@@ -55,7 +57,9 @@ async def get_author(author_id: int, session: AsyncSession = Depends(get_async_s
     response_model=AuthorCreate,
     status_code=201,
 )
-async def add_author(new_author: AuthorCreate, session: AsyncSession = Depends(get_async_session)):
+async def add_author(
+    new_author: AuthorCreate, session: AsyncSession = Depends(get_async_session)
+):
     stmt = insert(Author).values(**new_author.dict())
     await session.execute(stmt)
     await session.commit()
@@ -69,7 +73,11 @@ async def add_author(new_author: AuthorCreate, session: AsyncSession = Depends(g
     response_model=AuthorCreate,
     status_code=201,
 )
-async def edit_author(author_id: int, changed_author: AuthorCreate, session: AsyncSession = Depends(get_async_session)):
+async def edit_author(
+    author_id: int,
+    changed_author: AuthorCreate,
+    session: AsyncSession = Depends(get_async_session),
+):
     query = select(Author).where(author_id == Author.id)
     result = await session.execute(query)
     author = result.scalars().first()
@@ -90,7 +98,9 @@ async def edit_author(author_id: int, changed_author: AuthorCreate, session: Asy
     response_model=None,
     status_code=204,
 )
-async def delete_author(author_id: int, session: AsyncSession = Depends(get_async_session)):
+async def delete_author(
+    author_id: int, session: AsyncSession = Depends(get_async_session)
+):
     query = select(Author).where(author_id == Author.id)
     result = await session.execute(query)
     author = result.scalars().first()

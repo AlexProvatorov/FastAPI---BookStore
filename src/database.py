@@ -11,7 +11,9 @@ async_engine = create_async_engine(
     max_overflow=settings.MAX_OVERFLOW,
 )
 
-async_session_maker = async_sessionmaker(async_engine, class_=AsyncSession, expire_on_commit=False)
+async_session_maker = async_sessionmaker(
+    async_engine, class_=AsyncSession, expire_on_commit=False
+)
 
 
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
@@ -21,4 +23,3 @@ async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
 
 class Base(DeclarativeBase):
     pass
-
