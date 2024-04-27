@@ -41,22 +41,6 @@ class AuthorCreate(BaseModel):
         orm_mode = True
 
 
-class BookOut(BookCreate):
-    tags: List[TagCreate]
-
-
-class TagOut(TagCreate):
-    books: List[BookCreate]
-
-
-class BookOut2(BookCreate):
-    authors: List[AuthorCreate]
-
-
-class AuthorOut(AuthorCreate):
-    books: List[BookCreate]
-
-
 class AuthorOfBook(BaseModel):
     id_author: int
     id_book: int

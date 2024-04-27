@@ -1,20 +1,10 @@
-import os
-import sys
-
 import uvicorn
 
 from apps.auth.database import User
 
-from fastapi_users import fastapi_users, FastAPIUsers
+from fastapi_users import FastAPIUsers
 
-
-from datetime import datetime
-from enum import Enum
-from typing import List, Optional
-
-from fastapi_users import fastapi_users
 from fastapi import FastAPI
-from pydantic import BaseModel, Field
 
 from apps.auth.auth import auth_backend
 from apps.auth.manager import get_user_manager
@@ -23,6 +13,9 @@ from apps.auth.schemas import UserRead, UserCreate
 from api.books import router as books_list
 from api.tags import router as tags_list
 from api.authors import router as authors_list
+from exceptions import ExceptionBookstore
+from handlers import handle_exception_bookstore
+
 
 app = FastAPI(
     title="BookStore API",
@@ -62,6 +55,7 @@ app.include_router(books_list)
 app.include_router(tags_list)
 app.include_router(authors_list)
 
+app.add_exception_handler(ExceptionBookstore, handle_exception_bookstore)
 
 if __name__ == "__main__":
     uvicorn.run(

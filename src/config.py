@@ -28,13 +28,5 @@ class Settings(BaseSettings):
         # DSN - postgresql+asyncpg://postgres:postgres@localhost:5432/sa
         return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
-    @property
-    def DATABASE_URL_psycopg2(self):
-        # DSN - postgresql+psycopg2-binary://postgres:postgres@localhost:5432/sa
-        return f"postgresql+psycopg2://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
-
-    # class Config:
-    #     env_file = '.env'
-
 
 settings = Settings()
